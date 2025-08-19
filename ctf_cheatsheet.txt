@@ -88,16 +88,112 @@
         stegdetect -t jpg image.jpg........................................................................: Detectar esteganografía en JPG
         stegbreak -t o -f wordlist.txt image.jpg...........................................................: Ataque de diccionario a esteganografía
 
+[4.5] Document Analysis
+    ⌘ Office Documents
+        oledump.py document.doc...........................................................................: Analizar documentos de Office
+        olevba document.doc...............................................................................: Extraer y analizar macros
+        oletools-rtfobj document.rtf......................................................................: Analizar objetos en archivos RTF
+        mraptor document.doc..............................................................................: Detectar macros maliciosas
+        officeparser.py document.docx......................................................................: Extraer metadatos de Office
+        exiftool -a document.xls..........................................................................: Ver metadatos de Excel
+        xls2csv document.xls.............................................................................: Convertir Excel a CSV
+        pdfid.py document.pdf.............................................................................: Analizar PDFs sospechosos
+        pdf-parser.py document.pdf........................................................................: Extraer objetos de PDF
+        peepdf -i document.pdf...........................................................................: Analizar PDFs interactivamente
+
+[4.75] Advanced Steganography
+    ⌘ Tools & Techniques
+        zsteg image.png...................................................................................: Detect hidden data in PNG/BMP
+        stegsolve.jar.....................................................................................: Analyze images for steganography
+        stegdetect -t jpg image.jpg.......................................................................: Detect steganography in JPG
+        stegoveritas image.jpg............................................................................: Comprehensive steganography analysis
+        stegolsb stegano -i image.png -s secret.txt -o output.png -n 2....................................: Hide data in LSB
+        stegolsb stegano -r -i output.png -n 2 -b 1000....................................................: Extract data from LSB
+        stegpy -p "pass" image.png.......................................................................: Hide/extract with password
+        stegpy -r image.png..............................................................................: Extract data without password
+        outguess -k "pass" -d secret.txt image.jpg output.jpg.............................................: Hide data with Outguess
+        outguess -k "pass" -r output.jpg secret.txt.......................................................: Extract data with Outguess
+        openstego embed -mf secret.txt -cf image.jpg -sf output.jpg........................................: Hide files
+        openstego extract -sf output.jpg -p "pass" -xf output.txt.........................................: Extract files
+        stegsnow -C -p "pass" -m "message" input.txt output.txt...........................................: Whitespace steganography
+        stegsnow -C -p "pass" output.txt.................................................................: Extract hidden message
+        stegano-lsb -h image.png -m "message" -o output.png...............................................: Hide message in LSB
+        stegano-lsb -r -i output.png.....................................................................: Extract message from LSB
+        stegano-red -i image.png -m "message" -o output.png...............................................: Hide in red channel
+        stegano-red -r -i output.png.....................................................................: Extract from red channel
+
+    ⌘ Analysis & Recovery
+        binwalk -e file...................................................................................: Extract embedded files
+        foremost -i file -o output........................................................................: Recover files from image
+        pngcheck -v image.png............................................................................: Verify PNG integrity
+        jpseek image.jpg recovered.jpg....................................................................: Repair corrupt JPG
+        exiftool -a image.jpg............................................................................: View all metadata
+        exiv2 -p a image.jpg.............................................................................: Show all Exif metadata
+        stegdetect -t jpg image.jpg.......................................................................: Detect steganography in JPG
+        stegbreak -t o -f wordlist.txt image.jpg..........................................................: Dictionary attack on steganography
+        stegoveritas image.jpg -meta -brute -exif -image -trailing........................................: Comprehensive analysis
+        stegoveritas image.jpg -bruteLSB...................................................................: LSB brute force
+        stegoveritas image.jpg -bruteLSB -red -green -blue -stegano.......................................: RGB channel brute force
+        stegoveritas image.jpg -bruteLSB -stegano -pass "pass" -wordlist wordlist.txt.....................: Password-protected LSB
+        stegoveritas image.jpg -extractLSB -stegano LSB -width 1000 -height 1000 -out output.png..........: Extract LSB to image
+        stegoveritas image.jpg -extractLSB -stegano LSB -width 1000 -height 1000 -out output.bin -binary..: Extract LSB to binary
+        stegoveritas image.jpg -extractLSB -stegano LSB -width 1000 -height 1000 -out output.txt -text....: Extract LSB to text
+
 [5] Reverse Engineering
     ⌘ Herramientas
         Ghidra.............................................................................................: Herramienta de ingeniería inversa gratuita
         IDA Pro............................................................................................: Desensamblador y depurador
         radare2............................................................................................: Framework de ingeniería inversa
         Cutter.............................................................................................: Interfaz gráfica para radare2
+        Binary Ninja.......................................................................................: Desensamblador gráfico
+        Hopper.............................................................................................: Herramienta de ingeniería inversa
+        x64dbg/x32dbg.....................................................................................: Depuradores para Windows
+        Frida.............................................................................................: Dynamic instrumentation toolkit
+        GEF/GDB Enhanced Features..........................................................................: Mejoras para GDB
+        Pwntools..........................................................................................: Framework para desarrollo de exploits
+        ROPgadget.........................................................................................: Buscador de gadgets para ROP
+        Ropper............................................................................................: Herramienta de búsqueda de gadgets
+        angr..............................................................................................: Framework de análisis binario
+        binwalk...........................................................................................: Analizar y extraer firmas de archivos
+        upx -d binary.....................................................................................: Desempaquetar binarios UPX
+        strings -e l binary...............................................................................: Extraer cadenas en diferentes codificaciones
+        objdump -d binary.................................................................................: Desensamblar binario
+        readelf -a binary.................................................................................: Ver información detallada de ELF
+        patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 binary....................................: Cambiar el intérprete de un binario
+        pwn checksec binary...............................................................................: Ver protecciones del binario
 
-    ⌘ Comandos Básicos
-        r2 -d ./binary.....................................................................................: Depurar binario con radare2
-        aaa................................................................................................: Analizar todo en radare2
+    ⌘ Análisis Estático
+        file binary.......................................................................................: Identificar tipo de archivo
+        strings binary | less..............................................................................: Ver cadenas de texto
+        rabin2 -I binary..................................................................................: Información del binario
+        rabin2 -z binary..................................................................................: Ver cadenas de texto
+        rabin2 -s binary..................................................................................: Ver símbolos
+        rabin2 -i binary..................................................................................: Ver imports
+        rabin2 -l binary..................................................................................: Ver librerías
+        objdump -d binary | less..........................................................................: Desensamblar código
+        nm binary.........................................................................................: Ver símbolos
+        readelf -h binary.................................................................................: Ver encabezado ELF
+        checksec --file=binary............................................................................: Ver protecciones
+        pwn checksec binary...............................................................................: Ver protecciones (pwntools)
+        ltrace ./binary...................................................................................: Trazar llamadas a bibliotecas
+        strace ./binary...................................................................................: Trazar llamadas al sistema
+
+    ⌘ Análisis Dinámico
+        gdb -q ./binary...................................................................................: Iniciar GDB
+        gdb-peda$ checksec................................................................................: Ver protecciones (PEDA)
+        gdb-peda$ pattern create 100.......................................................................: Crear patrón para calcular offset
+        gdb-peda$ pattern offset $eip.....................................................................: Calcular offset del EIP
+        gdb-peda$ x/20wx $esp............................................................................: Examinar memoria
+        gdb-peda$ info functions..........................................................................: Listar funciones
+        gdb-peda$ disassemble main........................................................................: Desensamblar función main
+        gdb-peda$ break *main............................................................................: Punto de interrupción en main
+        gdb-peda$ run $(python -c 'print "A"*100')........................................................: Ejecutar con argumentos
+        gdb-peda$ x/s $eax...............................................................................: Examinar string en registro
+        gdb-peda$ vmmap..................................................................................: Ver mapeo de memoria
+        gdb-peda$ find "/bin/sh".........................................................................: Buscar string en memoria
+        gdb-peda$ ropsearch "pop rdi; ret"................................................................: Buscar gadgets ROP
+        gdb-peda$ ropgadget --binary binary...............................................................: Generar gadgets ROP
+        gdb-peda$ x/10i $pc-20..........................................................................: Desensamblar instrucciones actuales................................................................................................: Analizar todo en radare2
         afl................................................................................................: Listar funciones en radare2
         pdf @main..........................................................................................: Desensamblar función main en radare2
 
@@ -250,6 +346,42 @@
         zsteg..............................................................................................: Detectar datos ocultos en imágenes
         volatility.........................................................................................: Análisis de memoria forense
 
+[11] Remote File Sharing
+    ⌘ Netcat Transfer
+        nc -lvnp 4444 > archivo_recibido...................................................................: Recibir archivo con Netcat (receptor)
+        nc -w 3 <IP_REMOTA> 4444 < archivo_a_enviar........................................................: Enviar archivo con Netcat (emisor)
+        tar czf - directorio/ | nc -lvnp 4444..............................................................: Enviar directorio (emisor)
+        nc -w 3 <IP_EMISORA> 4444 | tar xvzf -.............................................................: Recibir directorio (receptor)
+
+    ⌘ Python HTTP Server
+        python3 -m http.server 8000........................................................................: Iniciar servidor HTTP en puerto 8000
+        python3 -m http.server --bind 0.0.0.0 8000.........................................................: Servidor HTTP accesible desde cualquier IP
+        wget http://<IP>:8000/archivo......................................................................: Descargar archivo del servidor HTTP
+
+    ⌘ SCP (SSH Copy)
+        scp archivo.txt usuario@<IP>:/ruta/destino/........................................................: Copiar archivo a máquina remota
+        scp -r directorio/ usuario@<IP>:/ruta/destino/.....................................................: Copiar directorio a máquina remota
+        scp usuario@<IP>:/ruta/archivo.txt . ..............................................................: Descargar archivo desde máquina remota
+
+    ⌘ Rsync
+        rsync -avz -e ssh directorio/ usuario@<IP>:/ruta/destino/..........................................: Sincronizar directorio local a remoto
+        rsync -avz -e ssh usuario@<IP>:/ruta/remota/ directorio_local/.....................................: Sincronizar directorio remoto a local
+        rsync -avz --partial --progress -e ssh archivo_grande usuario@<IP>:~/..............................: Continuar transferencia interrumpida
+
+    ⌘ Ngrok
+        ngrok http 80......................................................................................: Crear túnel HTTP a puerto local 80
+        ngrok tcp 22.......................................................................................: Crear túnel TCP para SSH
+        ngrok http 8000....................................................................................: Compartir servidor local en puerto 8000
+
+    ⌘ Magic Wormhole
+        wormhole send archivo.txt..........................................................................: Enviar archivo de forma segura
+        wormhole receive...................................................................................: Recibir archivo con código de verificación
+
+    ⌘ Transfer Web Services
+        curl --upload-file archivo.txt https://transfer.sh/archivo.txt.....................................: Subir archivo a transfer.sh (14 días)
+        croc send archivo.txt..............................................................................: Enviar archivo con Croc (más robusto)
+        croc <código>......................................................................................: Recibir archivo con Croc
+
 [5] Comandos de Sistema Útiles
     ⌘ Información del Sistema
         cat /etc/issue.....................................................................................: Mostrar versión del SO
@@ -287,10 +419,3 @@
         cut -d':' -f1 /etc/passwd..........................................................................: Extraer usuarios del sistema
         tr '[:lower:]' '[:upper:]' < archivo...............................................................: Convertir a mayúsculas
         tr ' ' '\n' < archivo | sort | uniq -c | sort -nr..................................................: Contar palabras únicas
-
-    ⌘ Referencias Rápidas
-        GTFOBins (https://gtfobins.github.io/).............................................................: Binarios para escalar privilegios
-        PayloadsAllTheThings (https://github.com/swisskyrepo/PayloadsAllTheThings).........................: Colección de payloads
-        HackTricks (https://book.hacktricks.xyz/)..........................................................: Guías de hacking
-        OWASP Testing Guide (https://owasp.org/www-project-web-security-testing-guide/)....................: Guía de pruebas de seguridad web
-        Exploit Database (https://www.exploit-db.com/).....................................................: Base de datos de exploits
