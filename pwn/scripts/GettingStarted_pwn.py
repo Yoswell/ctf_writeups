@@ -29,7 +29,7 @@ class Getting_started:
                 printf(" <- Dummy value for alignment");
             }
             if ((long)local_c * 8 + param_1 == param_1 + 48) { -> saved rbp (8 + 48) = 56
-                printf(" <- Saved rbp");
+                printf(" <- Saved rbp"); 
             }
             if ((long)local_c * 8 + param_1 == param_1 + 56) {
                 printf(" <- Saved return address");
